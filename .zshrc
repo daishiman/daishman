@@ -4,8 +4,12 @@
 # Path to your oh-my-zsh installation.
 # export ZSH=/Users/test_user/.oh-my-zsh
 
+
 # Path to your oh-my-zsh installation.
 export ZSH="/Users/manjumotodaishi/.oh-my-zsh"
+
+# oh-my-zsh がプロンプトを出さずに自動的にアップグレードする
+DISABLE_UPDATE_PROMPT=true
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -179,21 +183,37 @@ alias gg='git grep'
 alias ga='git add'
 alias gd='git diff'
 alias gl='git log'
+alias glg='git log --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit --date=relative'
+alias glga='git log --graph --all --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset"--abbrev-commit --date=relative'
 alias gchma='git checkout main'
 alias gf='git fetch'
 alias gfu='git fetch upstream'
 alias gfo='git fetch origin'
+alias gfy='git fetch yarukoto_list'
+alias gfw='git fetch wonderful'
 alias gmod='git merge origin/develop'
 alias gmud='git merge upstream/develop'
 alias gmom='git merge origin/main'
+alias gmym='git merge yarukoto_list/main'
 alias gcmm='git commit -m'
 alias gcmam='git commit -am'
 alias gpl='git pull'
 alias gplo='git pull origin'
+alias gply='git pull yarukoto_list'
+alias gplw='git pull wonderful'
 alias gploh='git pull origin HEAD'
+alias gplyh='git pull yarukoto_list HEAD'
+alias gplwh='git pull wonderful HEAD'
+alias gps='git push'
 alias gpso='git push origin'
+alias gpsy='git push yarukoto_list'
+alias gpsw='git push wonderful'
 alias gpsoh='git push origin HEAD'
+alias gpsyh='git push yarukoto_list HEAD'
+alias gpswh='git push wonderful HEAD'
 alias gpsom='git push origin main'
+alias gpsym='git push yarukoto_list main'
+alias gpswm='git push wonderful main'
 alias gst='git stash'
 alias gstl='git stash list'
 alias gstu='git stash -u'
@@ -218,6 +238,11 @@ alias sberc='sudo bundle exec rails c'
 alias Kobito='cd ~/Library/Containers/com.qiita.Kobito/Data/Library/Kobito/'
 alias vz='vim ~/.zshrc'
 alias sz='source ~/.zshrc'
+alias yd='yarn dev'
+alias yb='yarn build'
+alias yi='yarn install'
+alias ys='yarn start'
+alias yt='yarn test'
 
 # 文字コードの指定
 export LANG=ja_JP.UTF-8
@@ -381,3 +406,35 @@ function peco-ghq-look () {
 
 zle -N peco-ghq-look
 bindkey '^G' peco-ghq-look
+
+# peco 設定
+# peco find file
+function peco-find-file() {
+    if git rev-parse 2> /dev/null; then
+        source_files=$(git ls-files)
+    else
+        source_files=$(find . -type f)
+    fi
+    selected_files=$(echo $source_files | peco --prompt "[find file]")
+
+    BUFFER="${BUFFER}${echo $selected_files | tr '\n' ' '}"
+    CURSOR=$#BUFFER
+    zle redisplay
+}
+zle -N peco-find-file
+bindkey '^q' peco-find-file
+
+# 叩いたコマンドに色付けしてわかりやすく表示
+source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+
+if type brew &>/dev/null; then
+  FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
+
+  autoload -Uz compinit
+  compinit
+fi
+
+# nodenv
+export PATH="$HOME/.nodenv/bin:$PATH"
+eval "$(nodenv init -)"
